@@ -15,6 +15,15 @@ PHP_INSTALLED=$(ls -1 /usr/bin/php?? /usr/bin/php 2> /dev/null)
 NGINX_INSTALLED=$(ls -1 /usr/sbin/nginx 2> /dev/null)
 MARIADB_INSTALLED=$(ls -1 /usr/bin/mariadb /usr/bin/mysql 2> /dev/null)
 
+# netstat / ss 명령어 자동 감지
+# Rocky Linux 9 등 net-tools 미설치 환경에서는 ss 사용
+if command -v netstat &> /dev/null; then
+  NETSTAT_CMD="netstat -nlpt"
+else
+  # ss 출력 형식을 netstat 과 유사하게 맞춤
+  NETSTAT_CMD="ss -tlnp"
+fi
+
 # 주요 설정 파일
 title "php79 stack 에서 추가된 주요 설정 파일들"
 
@@ -80,13 +89,13 @@ if [ ! -z "$PHP_INSTALLED" ]; then
 
   # FPM port
   title "실행중인 PHP FPM port"
-  netstat -nlpt|grep -P "PID|php"|sort
+  ${NETSTAT_CMD}|grep -P "PID|php"
 fi
 
 # nginx
 if [ ! -z "$NGINX_INSTALLED" ]; then
   title "실행중인 Nginx port 및 응답 여부"
-  netstat -nlpt|grep -P "PID|nginx"
+  ${NETSTAT_CMD}|grep -P "PID|nginx"
   echo
 
   echo "curl http://127.0.0.1 -> "
@@ -108,7 +117,7 @@ fi
 # mariadb
 if [ ! -z "$MARIADB_INSTALLED" ]; then
   title "실행중인 MariaDB port 및 응답 여부"
-  netstat -nlpt|grep -P "PID|mysqld|mariadbd"
+  ${NETSTAT_CMD}|grep -P "PID|mysqld|mariadbd"
   echo
 
   echo -n "mysqladmin ping -> "

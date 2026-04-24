@@ -1,5 +1,17 @@
 # php79 stack 변경 내역
 
+## v1.6.2 (2025-04-24)
+
+### Fixed
+- scripts/init.sh: kmod-kvdo 패키지 충돌 오류 수정 (Rocky Linux 9)
+- status.sh: netstat 명령어 없는 환경 대응 (netstat/ss 자동 감지)
+  - Rocky Linux 9 기본 환경에서 net-tools 미설치시 ss 명령어 자동 사용
+
+## v1.6.1 (2025-04-24)
+
+### Fixed
+- scripts/init.sh: kmod-kvdo 패키지 충돌 오류 수정 (Rocky Linux 9)
+
 ## v1.6.0 (2025-04-24)
 
 ### Added
