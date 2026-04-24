@@ -12,7 +12,11 @@ is_installed nginx-release-centos
 if [ $FUNC_RESULT = "1" ]; then
     echo "Already installed. -> nginx-release-centos"
 else
-    if [ "$OS" = "rocky8" ]; then
+    if [ "$OS" = "rocky9" ]; then
+        if [ ! -f /etc/yum.repos.d/nginx.repo ]; then
+            cp -av "${STACK_ROOT}/nginx/rocky9/nginx.repo" /etc/yum.repos.d/
+        fi
+    elif [ "$OS" = "rocky8" ]; then
         if [ ! -f /etc/yum.repos.d/nginx.repo ]; then
             cp -av "${STACK_ROOT}/nginx/rocky8/nginx.repo" /etc/yum.repos.d/
         fi

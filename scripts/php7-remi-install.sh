@@ -4,6 +4,7 @@
 # License:: The MIT License (MIT)
 
 # PHP 7.2 부터 mcrypt 확장은 pecl 로 이전
+# Rocky Linux 9 에서는 PHP 7.4 만 설치 가능 (Remi EL9 제약)
 
 STACK_ROOT=$( dirname $( cd "$( dirname "$0" )" && pwd ) )
 source "${STACK_ROOT}/includes/function.inc.sh"
@@ -14,6 +15,13 @@ title "PHP [${PHP_VERSION}] 버전을 설치합니다."
 
 if [ -z ${PHP_VERSION} ]; then
   abort "설치할 PHP 버전을 입력하세요.  70, 71, 72, 74"
+fi
+
+# Rocky Linux 9 은 PHP 7.4 만 Remi 에서 제공
+if [ "$OS" = "rocky9" ]; then
+  if [ ${PHP_VERSION} != "74" ]; then
+    abort "Rocky Linux 9 에서는 PHP ${PHP_VERSION} 설치를 지원하지 않습니다. (Remi EL9 는 PHP 7.4 만 제공)"
+  fi
 fi
 
 # stack.conf 에서 선언한 PHP 모듈 배열
@@ -46,7 +54,7 @@ PHP_FPM_CONF=/etc/opt/remi/php$1/php-fpm.d/www.conf
 sed -i 's/^user = apache/user = nobody/g' $PHP_FPM_CONF
 sed -i 's/^group = apache/group = nobody/g' $PHP_FPM_CONF
 
-if [ "$OS" = "rocky8" ]; then
+if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
   sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5 .php7/security.limit_extensions = .php .html .htm .inc/g' $PHP_FPM_CONF
   sed -i 's/^listen = \/var\/opt\/remi\/php'$1'\/run\/php-fpm\/www.sock/listen = 127.0.0.1:90'$1'/g' $PHP_FPM_CONF
 else

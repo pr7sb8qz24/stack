@@ -1,5 +1,31 @@
 # php79 stack 변경 내역
 
+## v1.6.0 (2025-04-24)
+
+### Added
+- Rocky Linux 9 지원 추가
+  - OS 감지 로직에 `rocky9` 분기 추가 (includes/function.inc.sh)
+  - Rocky Linux 9 전용 Nginx 저장소 추가 (nginx/rocky9/nginx.repo)
+  - init.sh: Rocky 9 CRB(CodeReady Builder) 저장소 자동 활성화
+  - Remi 저장소 Rocky 9 (remi-release-9) 지원
+  - Rocky 9 지원 PHP 버전: 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5
+    - Rocky Linux 9 에서 PHP 5.x ~ 7.3 은 Remi EL9 미제공으로 설치 불가
+  - 서버 필수 유틸 Rocky 9 패키지 목록 추가 (DEV_PACKAGES_R9)
+- PHP 8.5 설치 지원 추가
+  - stack.defaults.conf: PHP85=0 옵션 추가
+  - install.sh: PHP 8.5 설치 분기 추가 (Rocky 8/9 전용)
+  - nginx/1-fastcgi-php85.conf: PHP 8.5 FastCGI 백엔드 추가 (포트 9085)
+  - scripts/php8-remi-install.sh: 8.5 버전 처리 추가
+  - PHP_MODULES_82 코멘트를 8.2 ~ 8.5 로 업데이트
+- MariaDB 기본 설치 버전 11.8 (LTS) 로 변경
+  - scripts/mariadb-install.sh: MariaDB 11.x 에서 MariaDB-compat 패키지 제외 처리
+- letsencrypt-install.sh: Rocky 9 certbot 경로 자동 감지 (/usr/bin/certbot)
+
+### Notes
+- Rocky Linux 9 최소 지원 PHP: 7.4
+- MariaDB 11.8 은 Rocky Linux 9 에서 공식 지원
+- CentOS 7 / Rocky Linux 8 기존 사용자는 stack.conf 에서 MARIADB_VERSION 을 원하는 버전으로 변경 가능
+
 ## v1.5.0 (2024-11-17)
 
 ### Added
@@ -114,7 +140,7 @@
 
 ### Fixed
 - status.sh 실행 속도 개선 및 서비스별 설정을 구분하여 표시하도록 개선 https://github.com/php79/stack/issues/22
-- 시간 동기화 명령인 ntpdate 실패(대부분 방화벽 차단, DNS 이슈)시에도 경고만 보여지고 설치가 진행되도록 개선 https://github.com/php79/stack/issues/31
+- 시간 자동 동기화 명령인 ntpdate 실패(대부분 방화벽 차단, DNS 이슈)시에도 경고만 보여지고 설치가 진행되도록 개선 https://github.com/php79/stack/issues/31
 - cpu core 수가 2개 인 경우, nginx.conf 의 worker_processes 가 0 으로 잘못 설정되던 오류 수정
 - self-update.sh 실행전과 후에 nginx 설정 테스트 추가 https://github.com/php79/stack/issues/5
 

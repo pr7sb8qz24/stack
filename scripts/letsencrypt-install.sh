@@ -10,10 +10,15 @@ title "Let's Encrypt 자동화툴을 설치합니다."
 
 notice "[1/5] 인증툴인 certbot-auto 를 설치합니다. - https://certbot.eff.org/"
 if [ ! -f "/usr/bin/certbot-auto" ]; then
-  if [ "$OS" = "rocky8" ]; then
-    echo "      Rocky Linux 8 에서는 EPEL 저장소의 certbot 패키지를 설치하고, certbot-auto 호환용 링크를 생성합니다."
+  if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
+    echo "      Rocky Linux 에서는 EPEL 저장소의 certbot 패키지를 설치하고, certbot-auto 호환용 링크를 생성합니다."
     yum_install certbot
-    ln -s /usr/bin/certbot-3 /usr/bin/certbot-auto
+    # Rocky 9 의 certbot 은 /usr/bin/certbot 으로 바로 설치됨
+    if [ -f /usr/bin/certbot-3 ]; then
+      ln -s /usr/bin/certbot-3 /usr/bin/certbot-auto
+    elif [ -f /usr/bin/certbot ]; then
+      ln -s /usr/bin/certbot /usr/bin/certbot-auto
+    fi
   else
     notice "      certbot 최신 버전의 CentOS 지원 중단에 따라, 지원가능한 1.10.1 버전을 설치합니다. - https://github.com/php79/stack/issues/83"
     cd /usr/bin \

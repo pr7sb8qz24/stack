@@ -13,8 +13,8 @@ PHP_VERSION=${1}
 title "PHP [${PHP_VERSION}] 버전을 설치합니다."
 
 if [ -z ${PHP_VERSION} ]; then
-    if [ "$OS" = "rocky8" ]; then
-      abort "설치할 PHP 버전을 입력하세요.  80, 81, 82, 83, 84"
+    if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
+      abort "설치할 PHP 버전을 입력하세요.  80, 81, 82, 83, 84, 85"
     else
       abort "설치할 PHP 버전을 입력하세요.  80, 81, 82, 83"
     fi
@@ -24,6 +24,7 @@ fi
 if [[ ${PHP_VERSION} = "80" || ${PHP_VERSION} = "81" ]]; then
   PHP_MODULES=(${PHP_MODULES_80})
 else
+  # 8.2 ~ 8.5
   PHP_MODULES=(${PHP_MODULES_82})
 fi
 
@@ -50,7 +51,7 @@ PHP_FPM_CONF=/etc/opt/remi/php$1/php-fpm.d/www.conf
 sed -i 's/^user = apache/user = nobody/g' $PHP_FPM_CONF
 sed -i 's/^group = apache/group = nobody/g' $PHP_FPM_CONF
 
-if [ "$OS" = "rocky8" ]; then
+if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
   sed -i 's/^;security.limit_extensions = .php .php3 .php4 .php5 .php7/security.limit_extensions = .php .html .htm .inc/g' $PHP_FPM_CONF
   sed -i 's/^listen = \/var\/opt\/remi\/php'$1'\/run\/php-fpm\/www.sock/listen = 127.0.0.1:90'$1'/g' $PHP_FPM_CONF
 else

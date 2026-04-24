@@ -50,7 +50,8 @@ fi
 
 ### PHP
 PHP_INSTALLED=
-if [ "$OS" != "rocky8" ]; then
+# Rocky Linux 8/9 에서는 PHP 5.3 ~ 5.5 미지원
+if [[ "$OS" != "rocky8" && "$OS" != "rocky9" ]]; then
   if [ $PHP53 = "1" ]; then
     if [ $OS = "centos7" ]; then
       #cmd_once "scripts/mariadb-repo-install.sh"
@@ -74,34 +75,37 @@ if [ "$OS" != "rocky8" ]; then
   fi
 fi
 
-if [ $PHP56 = "1" ]; then
-  cmd_once "scripts/remi-repo-install.sh"
-  cmd_once "scripts/php5-remi-install.sh 56"
-  PHP_INSTALLED=56
-fi
+# Rocky Linux 9 에서는 PHP 5.6 ~ 7.3 미지원 (Remi EL9 미제공)
+if [ "$OS" != "rocky9" ]; then
+  if [ $PHP56 = "1" ]; then
+    cmd_once "scripts/remi-repo-install.sh"
+    cmd_once "scripts/php5-remi-install.sh 56"
+    PHP_INSTALLED=56
+  fi
 
-if [ $PHP70 = "1" ]; then
-  cmd_once "scripts/remi-repo-install.sh"
-  cmd_once "scripts/php7-remi-install.sh 70"
-  PHP_INSTALLED=70
-fi
+  if [ $PHP70 = "1" ]; then
+    cmd_once "scripts/remi-repo-install.sh"
+    cmd_once "scripts/php7-remi-install.sh 70"
+    PHP_INSTALLED=70
+  fi
 
-if [ $PHP71 = "1" ]; then
-  cmd_once "scripts/remi-repo-install.sh"
-  cmd_once "scripts/php7-remi-install.sh 71"
-  PHP_INSTALLED=71
-fi
+  if [ $PHP71 = "1" ]; then
+    cmd_once "scripts/remi-repo-install.sh"
+    cmd_once "scripts/php7-remi-install.sh 71"
+    PHP_INSTALLED=71
+  fi
 
-if [ $PHP72 = "1" ]; then
-  cmd_once "scripts/remi-repo-install.sh"
-  cmd_once "scripts/php7-remi-install.sh 72"
-  PHP_INSTALLED=72
-fi
+  if [ $PHP72 = "1" ]; then
+    cmd_once "scripts/remi-repo-install.sh"
+    cmd_once "scripts/php7-remi-install.sh 72"
+    PHP_INSTALLED=72
+  fi
 
-if [ $PHP73 = "1" ]; then
-  cmd_once "scripts/remi-repo-install.sh"
-  cmd_once "scripts/php7-remi-install.sh 73"
-  PHP_INSTALLED=73
+  if [ $PHP73 = "1" ]; then
+    cmd_once "scripts/remi-repo-install.sh"
+    cmd_once "scripts/php7-remi-install.sh 73"
+    PHP_INSTALLED=73
+  fi
 fi
 
 if [ $PHP74 = "1" ]; then
@@ -134,11 +138,17 @@ if [ $PHP83 = "1" ]; then
   PHP_INSTALLED=83
 fi
 
-if [ "$OS" = "rocky8" ]; then
+if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
   if [ $PHP84 = "1" ]; then
     cmd_once "scripts/remi-repo-install.sh"
     cmd_once "scripts/php8-remi-install.sh 84"
     PHP_INSTALLED=84
+  fi
+
+  if [ $PHP85 = "1" ]; then
+    cmd_once "scripts/remi-repo-install.sh"
+    cmd_once "scripts/php8-remi-install.sh 85"
+    PHP_INSTALLED=85
   fi
 fi
 

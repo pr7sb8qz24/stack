@@ -10,7 +10,8 @@ title "MariaDB 저장소를 설치합니다."
 
 
 # 2023.11.23 CentOS 7 에서도 MariaDB 버전 선택 가능하도록 변경
-if [ "$OS" = "rocky8" ]; then
+# 2024-xx-xx Rocky Linux 9 지원 추가
+if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
   # https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/
   curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | \
   sudo bash -s -- --mariadb-server-version="mariadb-${MARIADB_VERSION}"

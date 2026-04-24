@@ -29,8 +29,10 @@ if [ -f /etc/rocky-release ]; then
   RELEASE_VERSION=`grep -o 'release [0-9]\+' /etc/rocky-release`
   if [ "$RELEASE_VERSION" = "release 8" ]; then
     OS=rocky8
+  elif [ "$RELEASE_VERSION" = "release 9" ]; then
+    OS=rocky9
   else
-    echo "Only Rocky Linux 8. (Rocky Linux 8 버전만 지원됩니다.)"
+    echo "Only Rocky Linux 8/9. (Rocky Linux 8, 9 버전만 지원됩니다.)"
     echo -n "Current version: " && cat /etc/rocky-release
     abort
   fi
@@ -46,7 +48,7 @@ elif [ -f /etc/centos-release ]; then
     abort
   fi
 else
-  echo "Only  Rocky Linux 8, CentOS 6/7. (Rocky Linux 8, CentOS 6/7 버전만 지원됩니다.)"
+  echo "Only Rocky Linux 8/9, CentOS 6/7. (Rocky Linux 8/9, CentOS 6/7 버전만 지원됩니다.)"
   abort
 fi
 
@@ -108,7 +110,9 @@ function welcome_short
 function welcome
 {
   welcome_short
-  if [ "$OS" = "rocky8" ]; then
+  if [ "$OS" = "rocky9" ]; then
+    echo "  * PHP 7.4 ~ 8.5 + Nginx + Let's Encrypt + MariaDB installer"
+  elif [ "$OS" = "rocky8" ]; then
     echo "  * PHP 5.6 ~ 8.4 + Nginx + Let's Encrypt + MariaDB installer"
   else
     echo "  * PHP 5.3 ~ 8.3 + Nginx + Let's Encrypt + MariaDB installer"
@@ -122,9 +126,19 @@ function options
     printf "  - Install ${GREEN}EPEL repo${NO_COLOR} / http://fedoraproject.org/wiki/EPEL\n"
   fi
 
+  if [ ! -f "locks/scripts_php8-remi-install.sh_85" ]; then
+    if [ $PHP85 = "1" ]; then
+      if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
+        printf "  - Install ${GREEN}PHP 8.5${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      else
+        printf "  - CentOS 7 에서는 ${GREEN}PHP 8.5${NO_COLOR} 를 지원하지 않습니다.\n"
+      fi
+    fi
+  fi
+
   if [ ! -f "locks/scripts_php8-remi-install.sh_84" ]; then
     if [ $PHP84 = "1" ]; then
-      if [ "$OS" = "rocky8" ]; then
+      if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
         printf "  - Install ${GREEN}PHP 8.4${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
       else
         printf "  - CentOS 7 에서는 ${GREEN}PHP 8.4${NO_COLOR} 를 지원하지 않습니다.\n"
@@ -164,40 +178,60 @@ function options
 
   if [ ! -f "locks/scripts_php7-remi-install.sh_73" ]; then
     if [ $PHP73 = "1" ]; then
-      printf "  - Install ${GREEN}PHP 7.3${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      if [ "$OS" = "rocky9" ]; then
+        printf "  - Rocky Linux 9 에서는 ${GREEN}PHP 7.3${NO_COLOR} 을 지원하지 않습니다.\n"
+      else
+        printf "  - Install ${GREEN}PHP 7.3${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      fi
     fi
   fi
 
   if [ ! -f "locks/scripts_php7-remi-install.sh_72" ]; then
     if [ $PHP72 = "1" ]; then
-      printf "  - Install ${GREEN}PHP 7.2${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      if [ "$OS" = "rocky9" ]; then
+        printf "  - Rocky Linux 9 에서는 ${GREEN}PHP 7.2${NO_COLOR} 를 지원하지 않습니다.\n"
+      else
+        printf "  - Install ${GREEN}PHP 7.2${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      fi
     fi
   fi
 
   if [ ! -f "locks/scripts_php7-remi-install.sh_71" ]; then
     if [ $PHP71 = "1" ]; then
-      printf "  - Install ${GREEN}PHP 7.1${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      if [ "$OS" = "rocky9" ]; then
+        printf "  - Rocky Linux 9 에서는 ${GREEN}PHP 7.1${NO_COLOR} 을 지원하지 않습니다.\n"
+      else
+        printf "  - Install ${GREEN}PHP 7.1${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+      fi
     fi
   fi
 
   if [ ! -f "locks/scripts_php7-remi-install.sh_70" ]; then
     if [ $PHP70 = "1" ]; then
-      printf "  - Install ${GREEN}PHP 7.0${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
-      printf "      ${YELLOW}PHP 7.0 have reached its \"End of Life\".${NO_COLOR} http://php.net/supported-versions.php\n"
+      if [ "$OS" = "rocky9" ]; then
+        printf "  - Rocky Linux 9 에서는 ${GREEN}PHP 7.0${NO_COLOR} 을 지원하지 않습니다.\n"
+      else
+        printf "  - Install ${GREEN}PHP 7.0${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+        printf "      ${YELLOW}PHP 7.0 have reached its \"End of Life\".${NO_COLOR} http://php.net/supported-versions.php\n"
+      fi
     fi
   fi
 
   if [ ! -f "locks/scripts_php5-remi-install.sh_56" ]; then
     if [ $PHP56 = "1" ]; then
-      printf "  - Install ${GREEN}PHP 5.6${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
-      printf "      ${YELLOW}PHP 5.6 have reached its \"End of Life\".${NO_COLOR} http://php.net/supported-versions.php\n"
+      if [ "$OS" = "rocky9" ]; then
+        printf "  - Rocky Linux 9 에서는 ${GREEN}PHP 5.6${NO_COLOR} 을 지원하지 않습니다.\n"
+      else
+        printf "  - Install ${GREEN}PHP 5.6${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
+        printf "      ${YELLOW}PHP 5.6 have reached its \"End of Life\".${NO_COLOR} http://php.net/supported-versions.php\n"
+      fi
     fi
   fi
 
   if [ ! -f "locks/scripts_php5-remi-install.sh_55" ]; then
     if [ $PHP55 = "1" ]; then
-      if [ "$OS" = "rocky8" ]; then
-        printf "  - Rocky Linux 8 에서는 ${GREEN}PHP 5.5${NO_COLOR} 를 지원하지 않습니다.\n"
+      if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
+        printf "  - Rocky Linux 에서는 ${GREEN}PHP 5.5${NO_COLOR} 를 지원하지 않습니다.\n"
       else
         printf "  - Install ${GREEN}PHP 5.5${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
         printf "      ${YELLOW}PHP 5.5 have reached its \"End of Life\".${NO_COLOR} http://php.net/supported-versions.php\n"
@@ -207,8 +241,8 @@ function options
 
   if [ ! -f "locks/scripts_php5-remi-install.sh_54" ]; then
     if [ $PHP54 = "1" ]; then
-      if [ "$OS" = "rocky8" ]; then
-        printf "  - Rocky Linux 8 에서는 ${GREEN}PHP 5.4${NO_COLOR} 를 지원하지 않습니다.\n"
+      if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
+        printf "  - Rocky Linux 에서는 ${GREEN}PHP 5.4${NO_COLOR} 를 지원하지 않습니다.\n"
       else
         printf "  - Install ${GREEN}PHP 5.4${NO_COLOR} from Remi repo / http://rpms.famillecollet.com/\n"
         printf "      ${YELLOW}PHP 5.4 have reached its \"End of Life\".${NO_COLOR} http://php.net/supported-versions.php\n"
@@ -218,8 +252,8 @@ function options
 
   if [[ ! -f "locks/scripts_centos7-php53-install.sh" && ! -f "locks/scripts_centos6-php53-install.sh" ]]; then
     if [ $PHP53 = "1" ]; then
-      if [ "$OS" = "rocky8" ]; then
-        printf "  - Rocky Linux 8 에서는 ${GREEN}PHP 5.3${NO_COLOR} 을 지원하지 않습니다.\n"
+      if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
+        printf "  - Rocky Linux 에서는 ${GREEN}PHP 5.3${NO_COLOR} 을 지원하지 않습니다.\n"
       else
         if [ ${OS} = "centos7" ]; then
           if [ ! -f "locks/scripts_centos7-php53-install.sh" ]; then
@@ -261,7 +295,7 @@ function options
 
   if [[ ! -f "locks/scripts_mariadb-repo-install.sh" && ! -f "locks/scripts_mariadb-install.sh_" ]]; then
     if [ $MARIADB = "1" ]; then
-      if [[ "$OS" = "centos7" || "$OS" = "rocky8" ]]; then
+      if [[ "$OS" = "centos7" || "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
         printf "  - Install ${GREEN}MariaDB ${MARIADB_VERSION}${NO_COLOR} from MariaDB repo (stable) / https://mariadb.com/kb/en/mariadb-package-repository-setup-and-usage/\n"
       else
         printf "  - Install ${GREEN}MariaDB 10.6${NO_COLOR} from MariaDB repo (stable) / https://mariadb.com/kb/en/mariadb/yum/\n"

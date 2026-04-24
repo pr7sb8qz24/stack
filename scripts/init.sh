@@ -16,10 +16,15 @@ else
   yum -y --exclude=kernel* update
 fi
 
-if [ "$OS" = "rocky8" ]; then
+if [[ "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
   # glibc-gconv-extra 미설치시 iconv 모듈에서 EUC-KR 등 한글 인코딩 미지원 오류 발생
   # rsyslog 설치해야 /var/log/messages 기록
   yum_install epel-release yum-utils chrony glibc-gconv-extra rsyslog
+
+  # Rocky Linux 9 에서는 CRB(CodeReady Builder) 저장소 활성화가 Remi 일부 패키지 설치에 필요
+  if [ "$OS" = "rocky9" ]; then
+    dnf config-manager --set-enabled crb 2>/dev/null || true
+  fi
 
   systemctl enable --now rsyslog
 

@@ -6,14 +6,19 @@
 STACK_ROOT=$( dirname $( cd "$( dirname "$0" )" && pwd ) )
 source "${STACK_ROOT}/includes/function.inc.sh"
 
-if [[ "$OS" = "centos7" || "$OS" = "rocky8" ]]; then
+if [[ "$OS" = "centos7" || "$OS" = "rocky8" || "$OS" = "rocky9" ]]; then
   title "MariaDB ${MARIADB_VERSION} 을 설치합니다."
 else
   title "MariaDB 10.6 을 설치합니다."
 fi
 
 
-yum_install MariaDB-server MariaDB-client MariaDB-common MariaDB-compat MariaDB-shared
+yum_install MariaDB-server MariaDB-client MariaDB-common MariaDB-shared
+
+# MariaDB-compat 은 10.x 에서만 존재하며, 11.x 에서는 제거됨
+if [[ "$OS" != "rocky9" ]]; then
+  yum_install MariaDB-compat 2>/dev/null || true
+fi
 
 # 메모리 선택 -> MariaDB 10.3 부터 미지원
 #if [ ${1} = "4G" ]; then
